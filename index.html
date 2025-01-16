@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>DehazeGS: Seeing Through Fog with 3D Gaussian Splatting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <!-- <link rel="icon" href="./static/images/favicon.svg"> -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="./static/js/script.js"></script>
+  <!-- <style>
+    .video-label {
+      text-align: center; /* 居中对齐 */
+      font-size: 24px;    /* 标签字体大小 */
+      font-weight: bold;  /* 标签加粗 */
+      margin-top: 10px;   /* 距离视频的间隔 */
+      color: #fff;        /* 标签文字颜色 */
+    }
+  </style> -->
+</head>
+
+<body>
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">DehazeGS: Seeing Through Fog with 3D Gaussian Splatting</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              Jinze Yu<sup>1</sup>,
+            </span>
+            <span class="author-block">
+              Yiqun Wang<sup>1</sup>,
+            </span>
+            <span class="author-block">
+              Zhengda Lu<sup>2</sup>,
+            </span>
+            <span class="author-block">
+              Jianwei Guo<sup>3</sup>,
+            </span>
+            <span class="author-block">
+              Yong Li<sup>1</sup>,
+            </span>
+            <span class="author-block">
+              Hongxing Qin<sup>1</sup>,
+            </span>
+            <span class="author-block">
+              Xiaopeng Zhang<sup>4</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>College of Computer Science, Chongqing University</span>
+            <span class="author-block"><sup>2</sup>School of Artificial Intelligence, University of Chinese Academy of Sciences</span>
+            <span class="author-block"><sup>3</sup>School of Artificial Intelligence, Beijing Normal University</span>
+            <span class="author-block"><sup>1</sup>4MAIS, Institute of Automation, Chinese Academy of Sciences</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <!-- <span class="link-block">
+                <a href="./static/pdf/blah.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span> -->
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2501.03659", target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href="https://www.youtube.com/watch?v=iU9JWIhw5kg"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <!-- <span class="link-block">
+                <a href="https://drive.google.com/file/d/1gItZkfEFmXZzIRh5b6wXeWD6GappX-QN/view?usp=sharing"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>SaltPond Data</span>
+                </a> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+      <video id="teaser" width="100%" playsinline controls autoplay loop muted>
+          <source src="static\images\blender\garden\ours\Ours02.mp4" type="video/mp4" />
+      </video>
+      
+<script>
+  document.getElementById('teaser').play();
+</script>
+
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+      <video id="teaser" width="100%" playsinline controls autoplay loop muted>
+          <source src="static\images\blender\garden\GS\3DGS.mp4" type="video/mp4" />
+      </video>
+<script>
+  document.getElementById('teaser').play();
+</script>
+  </div>
+</section>
+
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="static\images\pipline.jpg"
+        class="full-width-image"
+        alt="Overview."/>
+      <h2 class="subtitle has-text-centered">
+        <span class="dmethod">DehazeGS</span>, a method capable of decomposing and rendering a fog-free background from
+        participating media using only muti-view foggy
+        images as input.
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Current novel view synthesis tasks primarily rely
+on high-quality and clear images. However, in
+foggy scenes, scattering and attenuation can sig-
+nificantly degrade the reconstruction and render-
+ing quality. Although NeRF-based dehazing re-
+construction algorithms have been developed, their
+use of deep fully connected neural networks and
+per-ray sampling strategies leads to high computa-
+tional costs. Moreover, NeRF’s implicit represen-
+tation struggles to recover fine details from hazy
+scenes. In contrast, recent advancements in 3D
+Gaussian Splatting achieve high-quality 3D scene
+reconstruction by explicitly modeling point clouds
+into 3D Gaussians. In this paper, we propose lever-
+aging the explicit Gaussian representation to ex-
+plain the foggy image formation process through a
+physically accurate forward rendering process. We
+introduce DehazeGS, a method capable of decom-
+posing and rendering a fog-free background from
+participating media using only muti-view foggy
+images as input. We model the transmission within
+each Gaussian distribution to simulate the forma-
+tion of fog. During this process, we jointly learn the
+atmospheric light and scattering coefficient while
+optimizing the Gaussian representation of the hazy
+scene. In the inference stage, we eliminate the ef-
+fects of scattering and attenuation on the Gaussians
+and directly project them onto a 2D plane to ob-
+tain a clear view. Experiments on both synthetic
+and real-world foggy datasets demonstrate that De-
+hazeGS achieves state-of-the-art performance in
+terms of both rendering quality and computational
+efficiency.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+  <section class="section">
+    <div class="container ">
+      <div class=" has-text-centered">
+        <h2 class="title is-3">Qualitative comparison of novel view synthesis results on real foggy datasets,</h2>
+        <div class="content has-text-justified">
+          <p>
+
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <!-- Visual Effects. -->
+           <!-- 比较部分 -->
+          <div class="column">
+            <div class="content">
+              <div class="columns is-centered">
+                <div class="column is-full-width">
+                  <div id="example1" class="bal-container-small">
+
+                    <div class="bal-after">
+                      <img src="static\images\real\bear\ours\APC_0278.png">
+                      <div class="bal-afterPosition afterLabel" style="z-index:1;">
+                        Ours
+                      </div>
+                    </div>
+                    
+                    <div class="bal-before">
+                      <div class="bal-before-inset">
+                        <img src="static\images\real\bear\3DGS\APC_0278.jpg">
+                        <div class="bal-beforePosition beforeLabel">
+                          3D-GS
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bal-handle" style="left:96.4968152866242%;">
+                      <span class=" handle-left-arrow"></span>
+                      <span class="handle-right-arrow"></span>
+                    </div>
+
+                  </div>
+
+
+                  <div id="example2" class="bal-container-small">
+
+                    <div class="bal-after">
+                      <img src="static\images\real\elephant\ours\APC_0191.png">
+                      <div class="bal-afterPosition afterLabel">
+                        Ours
+                      </div>
+                    </div>
+
+                    <div class="bal-before" style="width: 50%;">
+                      <div class="bal-before-inset">
+                        <img src="static\images\real\elephant\3DGS\APC_0191.jpg">
+                        <div class="bal-beforePosition beforeLabel">
+                          3D-GS
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bal-handle" style="left: 50%;">
+                      <span class=" handle-left-arrow"></span>
+                      <span class="handle-right-arrow"></span>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!--/ Visual Effects. -->
+
+          <!-- Matting. -->
+          <div class="column">
+            <div class="columns is-centered">
+              <div class="column content">
+
+                <div id="example4" class="bal-container-small">
+                  <div class="bal-after">
+                    <img src="static\images\real\bear\ours\APC_0261.png">
+                    <div class="bal-afterPosition afterLabel" style="z-index:1;">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before" style="width:62.10191082802548%;">
+                    <div class="bal-before-inset">
+                      <img src="static\images\real\bear\3DGS\APC_0261.jpg">
+                      <div class="bal-beforePosition beforeLabel">
+                        3D-GS
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle" style="left:62.10191082802548%;">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example5" class="bal-container-small">
+                  <div class="bal-after">
+                    <img src="static\images\real\lion\ours\APC_0006.png">
+                    <div class="bal-afterPosition afterLabel" style="z-index:1;">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before" style="width:56.77179962894249%;">
+                    <div class="bal-before-inset">
+                      <img src="static\images\real\lion\gs\APC_0006.jpg">
+                      <div class="bal-beforePosition beforeLabel">
+                        3D-GS
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle" style="left:56.77179962894249%;">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="section">
+    <div class="container ">
+      <div class=" has-text-centered">
+        <h2 class="title is-3">Qualitative comparison of novel view synthesis results on synthetic foggy datasets</h2>
+        <div class="content has-text-justified">
+          <p>
+
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <!-- Visual Effects. -->
+           <!-- 比较部分 -->
+          <div class="column">
+            <div class="content">
+              <div class="columns is-centered">
+                <div class="column is-full-width">
+                  <div id="example6" class="bal-container-small">
+
+                    <div class="bal-after">
+                      <img src="static\images\blender\garden\ours\DSC08081.png">
+                      <div class="bal-afterPosition afterLabel" style="z-index:1;">
+                        Ours
+                      </div>
+                    </div>
+                    
+                    <div class="bal-before">
+                      <div class="bal-before-inset">
+                        <img src="static\images\blender\garden\GS\DSC08081.png">
+                        <div class="bal-beforePosition beforeLabel">
+                          3D-GS
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bal-handle" style="left:96.4968152866242%;">
+                      <span class=" handle-left-arrow"></span>
+                      <span class="handle-right-arrow"></span>
+                    </div>
+
+                  </div>
+
+
+                  <div id="example7" class="bal-container-small">
+
+                    <div class="bal-after">
+                      <img src="static\images\blender\bonsai\ours\DSCF5586.png">
+                      <div class="bal-afterPosition afterLabel">
+                        Ours
+                      </div>
+                    </div>
+
+                    <div class="bal-before" style="width: 50%;">
+                      <div class="bal-before-inset">
+                        <img src="static\images\blender\bonsai\GS\DSCF5586.jpg">
+                        <div class="bal-beforePosition beforeLabel">
+                          3D-GS
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bal-handle" style="left: 50%;">
+                      <span class=" handle-left-arrow"></span>
+                      <span class="handle-right-arrow"></span>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!--/ Visual Effects. -->
+
+          <!-- Matting. -->
+          <div class="column">
+            <div class="columns is-centered">
+              <div class="column content">
+
+                <div id="example8" class="bal-container-small">
+                  <div class="bal-after">
+                    <img src="static\images\blender\counter\ours\DSCF5896.png">
+                    <div class="bal-afterPosition afterLabel" style="z-index:1;">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before" style="width:62.10191082802548%;">
+                    <div class="bal-before-inset">
+                      <img src="static\images\blender\counter\3DGS\DSCF5896.jpg">
+                      <div class="bal-beforePosition beforeLabel">
+                        3D-GS
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle" style="left:62.10191082802548%;">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example9" class="bal-container-small">
+                  <div class="bal-after">
+                    <img src="static\images\blender\stump\Ours\DSC9327.png">
+                    <div class="bal-afterPosition afterLabel" style="z-index:1;">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before" style="width:56.77179962894249%;">
+                    <div class="bal-before-inset">
+                      <img src="static\images\blender\stump\3DGS\DSC9327.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        3D-GS
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle" style="left:56.77179962894249%;">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  
+
+  <script>
+    new BeforeAfter({
+      id: '#example1'
+    });
+    new BeforeAfter({
+      id: '#example2'
+    });
+    new BeforeAfter({
+      id: '#example4'
+    });
+    new BeforeAfter({
+      id: '#example5'
+    });
+    new BeforeAfter({
+      id: '#example6'
+    });
+    new BeforeAfter({
+      id: '#example7'
+    });
+    new BeforeAfter({
+      id: '#example8'
+    });
+    new BeforeAfter({
+      id: '#example9'
+    });
+  </script>
+  
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>
+      @article{yu2025dehazegs,
+        title={DehazeGS: Seeing Through Fog with 3D Gaussian Splatting},
+        author={Yu, Jinze and Wang, Yiqun and Lu, Zhengda and Guo, Jianwei and Li, Yong and Qin, Hongxing and Zhang, Xiaopeng},
+        journal={arXiv preprint arXiv:2501.03659},
+        year={2025}
+      }
+    </code></pre>
+  </div>
+</section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <a class="icon-link" href="https://arxiv.org/abs/2501.03659", target="_blank">
+          <i class="fas fa-file-pdf"></i>
+        </a>
+        <a class="icon-link"  class="external-link" disabled>
+          <i class="fab fa-github"></i>
+        </a>
+      </div>
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              This website borrowed template from <a href="https://seasplat.github.io/">seasplat</a> and <a href="https://benhenryl.github.io/Deblurring-3D-Gaussian-Splatting/">Deblurring-3D-Gaussian-Splatting</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>
